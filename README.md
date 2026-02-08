@@ -608,7 +608,71 @@ fetch('http://localhost:3000/api/listings', {
 
 ## 🚢 Deployment
 
-### Prepare for Production
+### Deploying to Railway
+
+Railway automatically detects and deploys Node.js applications. Here's how to deploy this project:
+
+#### Prerequisites
+- Railway account (free tier available at [railway.app](https://railway.app))
+- GitHub repository with this code pushed
+
+#### Steps
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Create Railway Project**
+   - Go to [railway.app](https://railway.app)
+   - Click "New Project"
+   - Select "Deploy from GitHub"
+   - Authorize and select your repository
+
+3. **Add MySQL Database**
+   - In Railway dashboard, click "Add Service"
+   - Select "MySQL"
+   - Railway will create a database automatically
+
+4. **Set Environment Variables**
+   - In Railway dashboard, go to Variables
+   - Add the following:
+   ```
+   DB_HOST=<railway-mysql-host>
+   DB_USER=<railway-mysql-user>
+   DB_PASSWORD=<railway-mysql-password>
+   DB_NAME=property_listing_db
+   DB_PORT=3306
+   PORT=3000
+   NODE_ENV=production
+   JWT_SECRET=<generate-secure-random-string>
+   JWT_EXPIRATION=7d
+   ```
+
+5. **Deploy Database Schema**
+   - Download MySQL workbench or use command line
+   - Connect to your Railway MySQL database
+   - Run the schema:
+   ```bash
+   mysql -h <railway-host> -u <user> -p < schema.sql
+   mysql -h <railway-host> -u <user> -p property_listing_db < auth_setup.sql
+   mysql -h <railway-host> -u <user> -p property_listing_db < sample_data.sql
+   ```
+
+6. **Deploy**
+   - Railway automatically detects the `Procfile`
+   - Build and deploy should start automatically
+   - Check deployment logs for any errors
+
+#### What Files Enable This
+
+- **Procfile**: Tells Railway how to build and run your app
+- **backend/package.json**: Contains start script and dependencies
+- **package.json** (root): Root configuration for Railway
+
+### General Production Setup
 
 1. **Update Environment Variables**
    ```bash
@@ -623,13 +687,7 @@ fetch('http://localhost:3000/api/listings', {
    NODE_ENV=production
    ```
 
-2. **Install Production Dependencies**
-   ```bash
-   cd backend
-   npm install --production
-   ```
-
-3. **Run Database Migrations**
+2. **Database Migrations**
    ```bash
    mysql -u <username> -p property_listing_db < schema.sql
    ```
