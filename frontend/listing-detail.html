@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Details - Nepal</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">🏠 Nepal Property Listings</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search.html">Search</a></li>
+                <li id="dashboardLink" style="display: none;"><a href="javascript:goDashboard()">Dashboard</a></li>
+                <li><a href="statistics.html">Statistics</a></li>
+                <li id="loginLink"><a href="login.html" class="btn-login">Login</a></li>
+                <li id="logoutLink" style="display: none;"><a href="javascript:logout()" class="btn-logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Listing Detail -->
+    <section class="listing-detail">
+        <div class="container">
+            <!-- Loading -->
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading property details...</p>
+            </div>
+
+            <!-- Detail Content -->
+            <div id="detailContent" style="display: none;">
+                <!-- Back Button -->
+                <a href="index.html" class="back-btn">← Back to Listings</a>
+
+                <div class="detail-grid">
+                    <!-- Left Column - Images & Info -->
+                    <div class="detail-main">
+                        <div class="detail-images">
+                            <div id="mainImage" class="main-image">
+                                <img src="https://via.placeholder.com/800x500?text=Property+Image" alt="Property">
+                            </div>
+                            <div id="imageGallery" class="image-gallery"></div>
+                        </div>
+
+                        <div class="detail-info">
+                            <div class="detail-header">
+                                <div>
+                                    <span id="propertyType" class="property-badge">Apartment</span>
+                                    <span id="propertyStatus" class="status-badge">active</span>
+                                </div>
+                                <h1 id="propertyTitle">Property Title</h1>
+                                <p id="propertyLocation" class="location">📍 Location</p>
+                            </div>
+
+                            <div class="price-section">
+                                <h2 id="propertyPrice" class="price">$0</h2>
+                            </div>
+
+                            <div class="property-details">
+                                <h3>Description</h3>
+                                <p id="propertyDescription">Property description...</p>
+                            </div>
+
+                            <div class="property-details">
+                                <h3>Address</h3>
+                                <p id="propertyAddress">Full address...</p>
+                            </div>
+
+                            <div class="property-stats">
+                                <div class="stat-item">
+                                    <span class="stat-icon">❤️</span>
+                                    <span id="favoriteCount">0</span> Favorites
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">💬</span>
+                                    <span id="inquiryCount">0</span> Inquiries
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">📷</span>
+                                    <span id="imageCount">0</span> Images
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Actions & Owner -->
+                    <div class="detail-sidebar">
+                        <div class="sidebar-card">
+                            <h3>Owner Information</h3>
+                            <div class="owner-info">
+                                <p><strong id="ownerName">Owner Name</strong></p>
+                                <p id="ownerEmail">email@example.com</p>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-card">
+                            <h3>Actions</h3>
+                            <button id="favoriteBtn" class="btn btn-primary btn-block">
+                                ❤️ Add to Favorites
+                            </button>
+                            <button id="inquiryBtn" class="btn btn-secondary btn-block">
+                                💬 Send Inquiry
+                            </button>
+                        </div>
+
+                        <div class="sidebar-card">
+                            <h3>Listed on</h3>
+                            <p id="createdDate">Date</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inquiries Section -->
+                <div class="inquiries-section">
+                    <h3>Recent Inquiries</h3>
+                    <div id="inquiriesList" class="inquiries-list"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Inquiry Modal -->
+    <div id="inquiryModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Send Inquiry</h2>
+            <form id="inquiryForm">
+                <div class="form-group">
+                    <label>Your User ID:</label>
+                    <input type="number" id="inquiryUserId" required min="1" placeholder="Enter your user ID">
+                    <small>For demo purposes. In production, this would be from authentication.</small>
+                </div>
+                <div class="form-group">
+                    <label>Message:</label>
+                    <textarea id="inquiryMessage" rows="4" required placeholder="Enter your message..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Inquiry</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Property Listings Database Project</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/detail.js"></script>
+    <script>
+        // Check authentication status on page load
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || 'null');
+            
+            if (token && user) {
+                // User is logged in
+                document.getElementById('loginLink').style.display = 'none';
+                document.getElementById('logoutLink').style.display = 'block';
+                document.getElementById('dashboardLink').style.display = 'block';
+            } else {
+                // User is not logged in
+                document.getElementById('loginLink').style.display = 'block';
+                document.getElementById('logoutLink').style.display = 'none';
+                document.getElementById('dashboardLink').style.display = 'none';
+            }
+        }
+
+        function goDashboard() {
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            switch(user.role) {
+                case 'admin':
+                    window.location.href = 'admin-dashboard.html';
+                    break;
+                case 'seller':
+                    window.location.href = 'seller-dashboard.html';
+                    break;
+                case 'buyer':
+                case 'agent':
+                default:
+                    window.location.href = 'buyer-dashboard.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
+            checkAuthStatus();
+            location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+</body>
+</html>

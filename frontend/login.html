@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Listing - Login & Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .form-container {
+            display: flex;
+            min-height: 500px;
+        }
+
+        .form-section {
+            flex: 1;
+            padding: 40px;
+            display: none;
+        }
+
+        .form-section.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        .toggle-btn {
+            background: #764ba2;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+        }
+
+        .toggle-btn:hover {
+            background: #6a3f95;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #fadbd8;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 14px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #d5f4e6;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .info-section {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .info-section p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .role-info {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .role-info strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .loading.show {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .remember-me input {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .remember-me label {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                flex-direction: column;
+            }
+
+            .info-section {
+                padding: 20px;
+                min-height: auto;
+            }
+
+            .form-section {
+                padding: 30px;
+            }
+
+            .form-title {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <!-- LOGIN FORM -->
+            <div class="form-section active" id="loginForm">
+                <div>
+                    <div class="form-title">Login to Your Account</div>
+                    
+                    <div class="error-message" id="loginError"></div>
+                    <div class="success-message" id="loginSuccess"></div>
+
+                    <form id="loginFormElement">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        </div>
+
+                        <div class="remember-me">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            <label for="rememberMe">Remember me</label>
+                        </div>
+
+                        <button type="submit">
+                            <span class="loading" id="loginLoading"></span>
+                            Login
+                        </button>
+                    </form>
+
+                    <button class="toggle-btn" onclick="toggleForm()">Don't have an account? Register</button>
+                </div>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <div class="form-section" id="registerForm">
+                <div>
+                    <div class="form-title">Create New Account</div>
+                    
+                    <div class="error-message" id="registerError"></div>
+                    <div class="success-message" id="registerSuccess"></div>
+
+                    <form id="registerFormElement">
+                        <div class="form-group">
+                            <label for="registerName">Full Name</label>
+                            <input type="text" id="registerName" placeholder="Your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerEmail">Email Address</label>
+                            <input type="email" id="registerEmail" placeholder="your@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <input type="password" id="registerPassword" placeholder="At least 6 characters" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerConfirmPassword">Confirm Password</label>
+                            <input type="password" id="registerConfirmPassword" placeholder="Confirm your password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerRole">Account Type</label>
+                            <select id="registerRole" required>
+                                <option value="">-- Select your role --</option>
+                                <option value="buyer">Buyer (View & Favorite Properties)</option>
+                                <option value="seller">Seller (List Properties)</option>
+                                <option value="agent">Agent (Professional)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerPhone">Phone Number (Optional)</label>
+                            <input type="tel" id="registerPhone" placeholder="Your phone number">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerAddress">Address (Optional)</label>
+                            <input type="text" id="registerAddress" placeholder="Your address">
+                        </div>
+
+                        <button type="submit">
+                            <span class="loading" id="registerLoading"></span>
+                            Register
+                        </button>
+                    </form>
+
+                    <button class="toggle-btn" onclick="toggleForm()">Already have an account? Login</button>
+                </div>
+            </div>
+
+            <!-- INFO SECTION -->
+            <div class="info-section">
+                <h2>Welcome to Property Listing</h2>
+                <p>Your trusted platform for property search and rental management in Nepal.</p>
+
+                <div class="role-info">
+                    <strong>🏠 Buyers:</strong>
+                    Browse properties, save favorites, and contact sellers directly.
+
+                    <strong style="margin-top: 10px;">🔑 Sellers:</strong>
+                    List your properties and manage inquiries from potential buyers.
+
+                    <strong style="margin-top: 10px;">👨‍💼 Agents:</strong>
+                    Professional access to property listings and detailed market information.
+
+                    <strong style="margin-top: 10px;">⚙️ Admins:</strong>
+                    Manage users, properties, and oversee platform operations.
+                </div>
+
+                <p style="margin-top: 30px; font-size: 12px; opacity: 0.8;">
+                    <strong>Demo Credentials:</strong><br>
+                    Email: admin@propertylisting.com<br>
+                    Password: password123
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        function toggleForm() {
+            document.getElementById('loginForm').classList.toggle('active');
+            document.getElementById('registerForm').classList.toggle('active');
+            clearMessages();
+        }
+
+        function clearMessages() {
+            document.getElementById('loginError').classList.remove('show');
+            document.getElementById('loginSuccess').classList.remove('show');
+            document.getElementById('registerError').classList.remove('show');
+            document.getElementById('registerSuccess').classList.remove('show');
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function showSuccess(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        // LOGIN FORM HANDLER
+        document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const loadingSpan = document.getElementById('loginLoading');
+
+            clearMessages();
+            loadingSpan.classList.add('show');
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                // Save token
+                const storage = rememberMe ? localStorage : sessionStorage;
+                storage.setItem('token', data.token);
+                storage.setItem('user', JSON.stringify(data.user));
+
+                showSuccess('loginSuccess', 'Login successful! Redirecting...');
+                
+                setTimeout(() => {
+                    redirectBasedOnRole(data.user.role);
+                }, 1500);
+
+            } catch (error) {
+                showError('loginError', error.message);
+            } finally {
+                loadingSpan.classList.remove('show');
+            }
+        });
+
+        // REGISTER FORM HANDLER
+        document.getElementById('registerFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            const role = document.getElementById('registerRole').value;
+            const phone = document.getElementById('registerPhone').value;
+            const address = document.getElementById('registerAddress').value;
+            const loadingSpan = document.getElementById('registerLoading');
+
+            clearMessages();
+
+            // Validation
+            if (password !== confirmPassword) {
+                showError('registerError', 'Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('registerError', 'Password must be at least 6 characters');
+                return;
+            }
+
+            if (!role) {
+                showError('registerError', 'Please select an account type');
+                return;
+            }
+
+            loadingSpan.classList.add('show');
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        role,
+                        phone: phone || null,
+                        address: address || null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Registration failed');
+                }
+
+                // Save token
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                showSuccess('registerSuccess', 'Registration successful! Redirecting...');
+                
+                setTimeout(() => {
+                    redirectBasedOnRole(data.user.role);
+                }, 1500);
+
+            } catch (error) {
+                showError('registerError', error.message);
+            } finally {
+                loadingSpan.classList.remove('show');
+            }
+        });
+
+        function redirectBasedOnRole(role) {
+            switch(role) {
+                case 'admin':
+                    window.location.href = 'admin-dashboard.html';
+                    break;
+                case 'seller':
+                    window.location.href = 'seller-dashboard.html';
+                    break;
+                case 'buyer':
+                case 'agent':
+                default:
+                    window.location.href = 'buyer-dashboard.html';
+            }
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (token) {
+                const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'));
+                redirectBasedOnRole(user.role);
+            }
+        });
+    </script>
+</body>
+</html>

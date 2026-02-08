@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Properties - Nepal</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">🏠 Nepal Property Listings</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search.html" class="active">Search</a></li>
+                <li id="dashboardLink" style="display: none;"><a href="javascript:goDashboard()">Dashboard</a></li>
+                <li><a href="statistics.html">Statistics</a></li>
+                <li id="loginLink"><a href="login.html" class="btn-login">Login</a></li>
+                <li id="logoutLink" style="display: none;"><a href="javascript:logout()" class="btn-logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="search-section">
+        <div class="container">
+            <h1>Search Properties</h1>
+
+            <!-- Search Form -->
+            <div class="search-card">
+                <form id="searchForm">
+                    <div class="search-grid">
+                        <div class="form-group">
+                            <label>City</label>
+                            <select id="citySelect">
+                                <option value="">All Cities</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Property Type</label>
+                            <select id="typeSelect">
+                                <option value="">All Types</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Min Price</label>
+                            <input type="number" id="minPrice" placeholder="$0" step="1000">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Max Price</label>
+                            <input type="number" id="maxPrice" placeholder="Any" step="1000">
+                        </div>
+                    </div>
+
+                    <div class="search-actions">
+                        <button type="submit" class="btn btn-primary">🔍 Search</button>
+                        <button type="button" id="resetBtn" class="btn btn-secondary">Clear Filters</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results -->
+            <div class="search-results">
+                <div class="results-header">
+                    <h2>Search Results</h2>
+                    <span id="resultCount" class="result-count">0 properties found</span>
+                </div>
+
+                <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Searching...</p>
+                </div>
+
+                <div id="resultsGrid" class="listings-grid"></div>
+
+                <div id="noResults" class="no-results" style="display: none;">
+                    <p>No properties match your search criteria</p>
+                    <button onclick="resetSearch()" class="btn btn-secondary">Clear Filters</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Property Listings Database Project</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/search.js"></script>
+    <script>
+        // Check authentication status on page load
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || 'null');
+            
+            if (token && user) {
+                // User is logged in
+                document.getElementById('loginLink').style.display = 'none';
+                document.getElementById('logoutLink').style.display = 'block';
+                document.getElementById('dashboardLink').style.display = 'block';
+            } else {
+                // User is not logged in
+                document.getElementById('loginLink').style.display = 'block';
+                document.getElementById('logoutLink').style.display = 'none';
+                document.getElementById('dashboardLink').style.display = 'none';
+            }
+        }
+
+        function goDashboard() {
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            switch(user.role) {
+                case 'admin':
+                    window.location.href = 'admin-dashboard.html';
+                    break;
+                case 'seller':
+                    window.location.href = 'seller-dashboard.html';
+                    break;
+                case 'buyer':
+                case 'agent':
+                default:
+                    window.location.href = 'buyer-dashboard.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
+            checkAuthStatus();
+            location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+</body>
+</html>

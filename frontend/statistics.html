@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Statistics - Nepal</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">🏠 Nepal Property Listings</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search.html">Search</a></li>
+                <li id="dashboardLink" style="display: none;"><a href="javascript:goDashboard()">Dashboard</a></li>
+                <li><a href="statistics.html" class="active">Statistics</a></li>
+                <li id="loginLink"><a href="login.html" class="btn-login">Login</a></li>
+                <li id="logoutLink" style="display: none;"><a href="javascript:logout()" class="btn-logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="statistics-section">
+        <div class="container">
+            <h1>Market Statistics</h1>
+
+            <!-- Loading -->
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading statistics...</p>
+            </div>
+
+            <!-- Stats Content -->
+            <div id="statsContent" style="display: none;">
+                <!-- Overview Stats -->
+                <div class="stats-overview">
+                    <h2>Market Overview</h2>
+                    <div class="stats-grid-large">
+                        <div class="stat-card-large">
+                            <span class="stat-icon-large">📊</span>
+                            <h3 id="totalListings">0</h3>
+                            <p>Total Listings</p>
+                        </div>
+                        <div class="stat-card-large">
+                            <span class="stat-icon-large">✅</span>
+                            <h3 id="activeListings">0</h3>
+                            <p>Active Listings</p>
+                        </div>
+                        <div class="stat-card-large">
+                            <span class="stat-icon-large">💰</span>
+                            <h3 id="avgPrice">$0</h3>
+                            <p>Average Price</p>
+                        </div>
+                        <div class="stat-card-large">
+                            <span class="stat-icon-large">🏆</span>
+                            <h3 id="soldListings">0</h3>
+                            <p>Sold Properties</p>
+                        </div>
+                    </div>
+
+                    <div class="price-range">
+                        <div class="price-item">
+                            <p>Minimum Price</p>
+                            <h3 id="minPrice">$0</h3>
+                        </div>
+                        <div class="price-item">
+                            <p>Maximum Price</p>
+                            <h3 id="maxPrice">$0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Cities -->
+                <div class="stats-section-card">
+                    <h2>🏙️ Top Cities by Listings</h2>
+                    <div id="topCities" class="stats-table"></div>
+                </div>
+
+                <!-- Property Types -->
+                <div class="stats-section-card">
+                    <h2>🏠 Property Types Distribution</h2>
+                    <div id="propertyTypes" class="stats-table"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Property Listings Database Project</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/statistics.js"></script>
+    <script>
+        // Check authentication status on page load
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || 'null');
+            
+            if (token && user) {
+                // User is logged in
+                document.getElementById('loginLink').style.display = 'none';
+                document.getElementById('logoutLink').style.display = 'block';
+                document.getElementById('dashboardLink').style.display = 'block';
+            } else {
+                // User is not logged in
+                document.getElementById('loginLink').style.display = 'block';
+                document.getElementById('logoutLink').style.display = 'none';
+                document.getElementById('dashboardLink').style.display = 'none';
+            }
+        }
+
+        function goDashboard() {
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            switch(user.role) {
+                case 'admin':
+                    window.location.href = 'admin-dashboard.html';
+                    break;
+                case 'seller':
+                    window.location.href = 'seller-dashboard.html';
+                    break;
+                case 'buyer':
+                case 'agent':
+                default:
+                    window.location.href = 'buyer-dashboard.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
+            checkAuthStatus();
+            location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepal Property Listings - Home</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">🏠 Nepal Property Listings</a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="search.html">Search</a></li>
+                <li id="dashboardLink" style="display: none;"><a href="javascript:goDashboard()">Dashboard</a></li>
+                <li><a href="statistics.html">Statistics</a></li>
+                <li id="loginLink"><a href="login.html" class="btn-login">Login</a></li>
+                <li id="logoutLink" style="display: none;"><a href="javascript:logout()" class="btn-logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Find Your Dream Property in Nepal</h1>
+            <p>Browse through our exclusive property listings across Nepal</p>
+            <div class="hero-actions">
+                <a href="search.html" class="btn btn-primary">Search Properties</a>
+                <a href="statistics.html" class="btn btn-secondary">View Statistics</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="quick-stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalListings">0</h3>
+                    <p>Total Listings</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeListings">0</h3>
+                    <p>Active Listings</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="avgPrice">₨ 0</h3>
+                    <p>Average Price (NPR)</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="soldListings">0</h3>
+                    <p>Sold Properties</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Listings Section -->
+    <section class="listings-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Latest Listings</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-status="all">All</button>
+                    <button class="filter-btn" data-status="active">Active</button>
+                    <button class="filter-btn" data-status="sold">Sold</button>
+                    <button class="filter-btn" data-status="pending">Pending</button>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading listings...</p>
+            </div>
+
+            <!-- Listings Grid -->
+            <div id="listingsGrid" class="listings-grid"></div>
+
+            <!-- No Results -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <p>No listings found</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Property Listings Database Project</p>
+            <p>Built with Node.js, Express & MySQL</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Check authentication status on page load
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || 'null');
+            
+            if (token && user) {
+                // User is logged in
+                document.getElementById('loginLink').style.display = 'none';
+                document.getElementById('logoutLink').style.display = 'block';
+                document.getElementById('dashboardLink').style.display = 'block';
+            } else {
+                // User is not logged in
+                document.getElementById('loginLink').style.display = 'block';
+                document.getElementById('logoutLink').style.display = 'none';
+                document.getElementById('dashboardLink').style.display = 'none';
+            }
+        }
+
+        function goDashboard() {
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            switch(user.role) {
+                case 'admin':
+                    window.location.href = 'admin-dashboard.html';
+                    break;
+                case 'seller':
+                    window.location.href = 'seller-dashboard.html';
+                    break;
+                case 'buyer':
+                case 'agent':
+                default:
+                    window.location.href = 'buyer-dashboard.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
+            checkAuthStatus();
+            location.reload();
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+            loadStatistics();
+            loadListings();
+
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const status = e.target.dataset.status;
+                    loadListings(status === 'all' ? null : status);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

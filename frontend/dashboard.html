@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Nepal</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">🏠 Nepal Property Listings</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search.html">Search</a></li>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="statistics.html">Statistics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard-section">
+        <div class="container">
+            <h1>User Dashboard</h1>
+
+            <!-- User Selection -->
+            <div class="search-card">
+                <div class="form-group">
+                    <label>Select User:</label>
+                    <select id="userSelect" onchange="loadUserDashboard()">
+                        <option value="">Choose a user...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading dashboard...</p>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div id="dashboardContent" style="display: none;">
+                <!-- User Info -->
+                <div class="dashboard-header">
+                    <div class="user-info-card">
+                        <h2 id="userName">User Name</h2>
+                        <p id="userEmail">email@example.com</p>
+                        <span id="userRole" class="role-badge">buyer</span>
+                    </div>
+
+                    <div class="user-stats-grid">
+                        <div class="stat-card">
+                            <h3 id="favCount">0</h3>
+                            <p>Favorites</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="inqCount">0</h3>
+                            <p>Inquiries</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="propCount">0</h3>
+                            <p>Properties</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favorites -->
+                <div class="dashboard-section-card">
+                    <h3>❤️ My Favorites</h3>
+                    <div id="favoritesList" class="dashboard-list"></div>
+                </div>
+
+                <!-- Inquiries -->
+                <div class="dashboard-section-card">
+                    <h3>💬 My Inquiries</h3>
+                    <div id="inquiriesList" class="dashboard-list"></div>
+                </div>
+
+                <!-- Properties (for sellers) -->
+                <div id="propertiesSection" class="dashboard-section-card" style="display: none;">
+                    <h3>🏠 My Properties</h3>
+                    <div id="propertiesList" class="dashboard-list"></div>
+                </div>
+            </div>
+
+            <!-- No User Selected -->
+            <div id="noUserSelected" class="no-results">
+                <p>Please select a user to view their dashboard</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Property Listings Database Project</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
